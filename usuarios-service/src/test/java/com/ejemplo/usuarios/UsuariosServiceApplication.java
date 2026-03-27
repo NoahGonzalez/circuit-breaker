@@ -14,7 +14,7 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 public class UsuariosServiceApplication {
 
     @Autowired
-    private RestTemplate restTemplate;
+    private RestTemplate restTemplate;  // Viene de tu AppConfig
 
     public static void main(String[] args) {
         SpringApplication.run(UsuariosServiceApplication.class, args);
@@ -26,7 +26,6 @@ public class UsuariosServiceApplication {
     public String obtenerNumero() {
         System.out.println("=== Intentando llamar a datos-service con @LoadBalanced ===");
         
-        // Sin try-catch: si falla, la excepción sube y el Circuit Breaker la atrapa
         String respuesta = restTemplate.getForObject(
                 "http://DATOS-SERVICE/numero",
                 String.class
@@ -35,8 +34,8 @@ public class UsuariosServiceApplication {
         return "usuarios-service (load balanced) recibió → " + respuesta;
     }
 
-    // Método Fallback: se ejecuta si DATOS-SERVICE no responde o da error
-    public String obtenerNumeroFallback(Throwable e) {
+    // Método Fallback: se ejecuta si DATOS-SERVICE no responde
+    public String obtenerNumeroFallback(Exception e) {
         System.out.println("ERROR DETECTADO: " + e.getMessage());
         System.out.println("=== Ejecutando Fallback (Plan B) ===");
         
